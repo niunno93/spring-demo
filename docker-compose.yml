@@ -1,0 +1,61 @@
+version: "3.8"
+services:
+  app1:
+    image: demo:0.0.1-SNAPSHOT
+    ports:
+      - "8081:8080"
+    environment:
+      - "SPRING_PROFILES_ACTIVE=release"
+      - "POSTGRES_HOST=postgres"
+      - "POSTGRES_DB=postgres"
+      - "POSTGRES_USERNAME=postgres"
+      - "POSTGRES_PASSWORD=postgres"
+      - "REDIS_HOST=redis"
+      - "ELASTICSEARCH_URIS=http://elastic:9200"
+  app2:
+    image: demo:0.0.1-SNAPSHOT
+    ports:
+      - "8082:8080"
+    environment:
+      - "SPRING_PROFILES_ACTIVE=release"
+      - "POSTGRES_HOST=postgres"
+      - "POSTGRES_DB=postgres"
+      - "POSTGRES_USERNAME=postgres"
+      - "POSTGRES_PASSWORD=postgres"
+      - "REDIS_HOST=redis"
+      - "ELASTICSEARCH_URIS=http://elastic:9200"
+  postgres:
+    image: postgres:11-alpine
+    environment:
+      - "POSTGRES_PASSWORD=postgres"
+    ports:
+      - "5432:5432"
+    volumes:
+      - "./config/postgres/scripts:/docker-entrypoint-initdb.d"
+  redis:
+    image: redis:6-alpine
+    ports:
+      - "6379:6379"
+
+  elastic:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.12.0
+    environment:
+      - node.name=elastic
+      - cluster.name=elastic-cluster
+      - discovery.seed_hosts=elastic
+      - cluster.initial_master_nodes=elastic
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    ports:
+      - 9200:9200
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.12.0
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elastic:9200
+    ports:
+      - 5601:5601

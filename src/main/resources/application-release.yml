@@ -1,0 +1,10 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://${POSTGRES_HOST}:5432/${POSTGRES_DB}
+    username: ${POSTGRES_USERNAME}
+    password: ${POSTGRES_PASSWORD}
+  elasticsearch:
+    rest:
+      uris: ${ELASTICSEARCH_URIS}
+  redis:
+    host: ${REDIS_HOST}
